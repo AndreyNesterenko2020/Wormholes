@@ -4,7 +4,7 @@ cheats.enabled = false;
 
 cheats.init = function() {
   document.addEventListener("keypress", function(event) {
-    cheats.buffer += event.key;
+    cheats.buffer += event.key[0];
     if(cheats.buffer.length > 64) {
       var a = cheats.buffer.split("");
       a.shift();
