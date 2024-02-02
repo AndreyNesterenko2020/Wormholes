@@ -1,0 +1,138 @@
+<!DOCTYPE CBT>
+<html>
+  <head>
+    <title>A math game with fun portal puzzles</title>
+    
+    <!--super duper important libraries first-->
+    <script src="js/libs/THREE.js"></script>
+    <script src="js/libs/OrbitControls.js"></script>
+    <script src="js/libs/cannon.js"></script>
+    <script src="js/libs/FirstPersonControls.js"></script>
+    <script src="js/libs/PointerLockControls.js"></script>
+    <script src="js/libs/GLTFLoader.js"></script>
+    
+    <!--style module-->
+    <link rel="stylesheet" href="css/main.css"></link>
+  </head>
+  <body>
+    <!--loading progress element-->
+    <div id="load" style="position:fixed">Loading libraries...</div>
+    
+    <!--create the main game-->
+    <script>
+      const mainGame = {};
+      
+      //three js objects
+      mainGame.scene = new THREE.Scene();
+      mainGame.camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.2, 1000);
+
+      mainGame.renderer = new THREE.WebGLRenderer({preserveDrawingBuffer:true});
+      mainGame.renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(mainGame.renderer.domElement);
+
+      mainGame.geometry = new THREE.BoxGeometry(1, 1, 1);
+      mainGame.material = new THREE.MeshBasicMaterial({ color: 0x005E99 });
+      
+      //mainGame.controls = new THREE.OrbitControls(mainGame.camera, mainGame.renderer.domElement);
+      //mainGame.controls.target.y = 1;
+      mainGame.controls = {};
+      mainGame.controls.PointerLock = new THREE.PointerLockControls(mainGame.camera, mainGame.renderer.domElement);
+      mainGame.controls.FirstPerson = new THREE.FirstPersonControls(mainGame.camera, mainGame.renderer.domElement);
+      
+      mainGame.textureLoader = new THREE.TextureLoader();
+      
+      //resizing
+      mainGame.onWindowResize = function(){
+          mainGame.camera.aspect = window.innerWidth / window.innerHeight;
+          mainGame.camera.updateProjectionMatrix();
+          mainGame.renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+      
+      //tickloop
+      mainGame.lastTick = 0;
+      mainGame.lastLoggedError = 0;
+      mainGame.tickLoop = function() {
+        mainGame.lastTick = Date.now();
+        try {
+          //rendering updates
+          mainGame.renderer.render(mainGame.scene, mainGame.camera);
+          mainGame.controls.FirstPerson.update(0.1);
+          //mainGame.controls.update();
+          //mainGame.controls.target=mainGame.camera.position.clone().add(new THREE.Vector3(0,0,-1).applyQuaternion(mainGame.camera.quaternion).multiplyScalar(10));
+          
+          //game logic updates
+          portalSystem.updatePortals();
+          physicsSystem.update();
+          player.update();
+          portalPhysics.update();
+          itemSystem.update();
+          menuSystem.update();
+          cheats.update();
+        } catch (e) {
+          if(Date.now()-mainGame.lastLoggedError > 500) {
+            mainGame.lastLoggedError = Date.now();
+            console.error("Error caught in mainGame.tickLoop: "+e+"\n"+e.stack);
+          }
+        }
+        requestAnimationFrame(mainGame.tickLoop);
+      }
+      
+      //events
+      window.addEventListener('resize', mainGame.onWindowResize, false);
+      mainGame.renderer.domElement.addEventListener('click', function(){mainGame.controls.PointerLock.lock()});
+      
+      //init
+      mainGame.initted = false;
+      mainGame.init = function() {
+        //tickloop start
+        mainGame.tickLoop();
+        mainGame.initted = true;
+        
+        //game logic init
+        levelBuilder.init();
+        player.init();
+        itemSystem.init();
+        menuSystem.init();
+        cheats.init();
+        
+        //game loaded
+        document.getElementById("load").innerHTML = "Game initted";
+        setTimeout(function(){
+          document.getElementById("load").innerHTML = "";
+        }, 1000);
+      }
+      
+      //pre-init
+      mainGame.preInit = function() {
+        document.getElementById("load").innerHTML = "Loading game components... <br>";
+        document.getElementById("load").innerHTML += "portalSystem: "+typeof portalSystem+"<br>";
+        document.getElementById("load").innerHTML += "levelBuilder: "+typeof levelBuilder+"<br>";
+        document.getElementById("load").innerHTML += "physicsSystem: "+typeof physicsSystem+"<br>";
+        document.getElementById("load").innerHTML += "player: "+typeof player+"<br>";
+        document.getElementById("load").innerHTML += "portalPhysics: "+typeof portalPhysics+"<br>";
+        document.getElementById("load").innerHTML += "itemSystem: "+typeof itemSystem+"<br>";
+        document.getElementById("load").innerHTML += "itemTypes: "+typeof itemTypes+"<br>";
+        document.getElementById("load").innerHTML += "menuSystem: "+typeof menuSystem+"<br>";
+        document.getElementById("load").innerHTML += "cheats: "+typeof cheats+"<br>";
+        if(typeof portalSystem != "undefined" && typeof levelBuilder != "undefined" && typeof physicsSystem != "undefined" && typeof player != "undefined" && typeof portalPhysics != "undefined" && typeof itemSystem != "undefined" && typeof itemTypes != "undefined" && typeof menuSystem != "undefined" && typeof cheats != "undefined") {
+          mainGame.init();
+        } else {
+          setTimeout(mainGame.preInit, 100);
+        }
+      }
+      
+      mainGame.preInit();
+    </script>
+    
+    <!--finally, load in the remaining game components-->
+    <script src="js/main/portal.js"></script>
+    <script src="js/main/level.js"></script>
+    <script src="js/main/physics.js"></script>
+    <script src="js/main/player.js"></script>
+    <script src="js/main/portalPhysics.js"></script>
+    <script src="js/main/itemSystem.js"></script>
+    <script src="js/main/itemTypes.js"></script>
+    <script src="js/main/menu.js"></script>
+    <script src="js/main/cheats.js"></script>
+  </body>
+</html>

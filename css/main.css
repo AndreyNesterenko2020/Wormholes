@@ -1,0 +1,25 @@
+button:hover {
+  filter: brightness(50%);
+}
+button {
+  font-family: blockbuilder3D;
+  background-color: white;
+  position: fixed;
+  background-image: url("../textures/UI/button.png");
+  background-size: 100% 100%;
+  cursor: pointer;
+}
+body {
+  font-family: blockbuilder3D;
+}
+
+@keyframes current {
+  from {transform: scale(1.15, 1.15);}
+  50% {transform: scale(0.95,0.95);}
+  to {transform: scale(1.15, 1.15);}
+}
+
+@fontface {
+  font-family: BlockBuilder3D;
+  src: url("../font/BlockBuilder3D.ttf");
+}
