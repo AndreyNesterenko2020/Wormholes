@@ -4,7 +4,7 @@ menuSystem.level = -1;
 menuSystem.lastSave = -1;
 menuSystem.levelJustBeaten = -1;
 menuSystem.allowSwitchItems = false;
-menuSystem.gameVersion = "balls";
+menuSystem.gameVersion = "1.0_alpha";
 
 menuSystem.init = function() {
   menuSystem.mainMenu = document.createElement("div");
