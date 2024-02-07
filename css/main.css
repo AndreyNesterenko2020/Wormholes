@@ -19,7 +19,7 @@ body {
   to {transform: scale(1.15, 1.15);}
 }
 
-@fontface {
+@font-face {
   font-family: BlockBuilder3D;
   src: url("../font/BlockBuilder3D.ttf");
 }

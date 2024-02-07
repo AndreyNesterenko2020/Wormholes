@@ -85,6 +85,9 @@ player.init = function () {
           });
         });
       }
+      if(e.key == "k") {
+        player.cameraControlTaken = !player.cameraControlTaken;
+      }
     }
   });
   setTimeout(function(){
@@ -137,7 +140,7 @@ player.update = function () {
   
   //whether or not to show help/cheat menu
   if(player.renderHelp && typeof cheats != "undefined" && cheats.enabled) {
-    document.getElementById("load").innerHTML = "<h4>HELP MENU</h4><b>Player help</b><br>y key - toggle player visibility<br>u key - toggle third person<br>i key - increase speed<br>o key - decrease speed<br>p key - hide help<br><br><b>Rendering help</b><br>h key - toggle portal rendering<br>j key - refresh portals";
+    document.getElementById("load").innerHTML = "<h4>HELP MENU</h4><b>Player help</b><br>y key - toggle player visibility<br>u key - toggle third person<br>i key - increase speed<br>o key - decrease speed<br>p key - hide help<br><br><b>Rendering help</b><br>h key - toggle portal rendering<br>j key - refresh portals<br>k key - freecam";
   } else {
     document.getElementById("load").innerHTML = "";
   }

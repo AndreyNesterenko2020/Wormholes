@@ -139,6 +139,7 @@ itemTypes.pickUp = {
     }
   },
   update: function() {
+    if(itemTypes.pickUp.pickedUpItem && !itemTypes.pickUp.pickedUpItem.parent) itemTypes.pickUp.pickedUpItem = false;
     itemSystem.viewModel.children[0].rotation.y=0;
     if(itemTypes.pickUp.pickedUpItem) {
       itemTypes.pickUp.pickedUpItem.position.copy(itemSystem.viewModel.position.clone().add(new THREE.Vector3(0, 0, -2).applyQuaternion(mainGame.camera.quaternion)));
@@ -149,5 +150,11 @@ itemTypes.pickUp = {
       itemSystem.viewModel.children[0].children[0].position.z = -0.6755301356315613;
       itemSystem.viewModel.children[0].children[1].position.z = 0.7029600143432617;
     }
+    setTimeout(function(){
+      if(itemTypes.pickUp.pickedUpItem && itemSystem.currentItem != "pickUp") {
+        physicsSystem.makeHitbox(itemTypes.pickUp.pickedUpItem);
+        itemTypes.pickUp.pickedUpItem = false;
+      }
+    },10);
   }
 }

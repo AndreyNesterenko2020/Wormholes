@@ -16,5 +16,10 @@ cheats.init = function() {
 cheats.update = function() {
   if(cheats.buffer.includes("monkey")) {
     cheats.enabled = true;
+    cheats.buffer = "";
+  }
+  if(cheats.buffer.includes("wormholes")) {
+    menuSystem.play("originalTestingLevel",true);
+    cheats.buffer = "";
   }
 }

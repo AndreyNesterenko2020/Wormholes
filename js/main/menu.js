@@ -1,10 +1,10 @@
 const menuSystem = {};
-menuSystem.levels = 15;
+menuSystem.levels = 16;
 menuSystem.level = -1;
 menuSystem.lastSave = -1;
 menuSystem.levelJustBeaten = -1;
 menuSystem.allowSwitchItems = false;
-menuSystem.gameVersion = "1.0_alpha";
+menuSystem.gameVersion = "dev";
 
 menuSystem.init = function() {
   menuSystem.mainMenu = document.createElement("div");
@@ -19,7 +19,7 @@ menuSystem.init = function() {
     <h1 style="margin-left: 0%">WORMHOLES</h1>
     <h3>`+menuSystem.gameVersion+`</h3>
     <button style='left: 33.3%; width: 33.3%; top: 25%' onclick="menuSystem.levelSelectScreen()"><h1>PLAY</h1></button>
-    <button style='left: 33.3%; width: 33.3%; top: 35%' onclick="var popup = window.open('about:blank',false,'width=1'); popup.document.write('<h1>WORMHOLES</h1>A game by ExplodIng_Andrey<br><br><b>Special thanks to:</b><br>Metalarse1234 - suggestions<br>Larry - testing<br>Cakrows - suggestions<br>The J - testing<br>TonyTheBoi - testing<br>Pixi - testing<br>dsinkerii - suggestions<br>Lightbulb - testing<br><br><i>If you believe something is wrong here, (e.g. something is missing), let me know!</i>'); if(popup.closed) alert('Thanks to everyone who tested!')"><h1>CREDITS</h1></button>
+    <button style='left: 33.3%; width: 33.3%; top: 35%' onclick="var popup = window.open('about:blank',false,'width=1'); popup.document.write('<h1>WORMHOLES</h1>A game by ExplodIng_Andrey<br><br><b>Special thanks to:</b><br>Metalarse1234 - suggestions<br>Larry - testing<br>TonyTheBoi - testing<br>Pixi - testing<br>Lightbulb - testing<br>JavTheNoob - testing and suggestions<br>Sheriff Of Light - testing<br><br><i>If you believe something is wrong here, (e.g. something is missing), let me know!</i>'); if(popup.closed) alert('Thanks to everyone who tested!')"><h1>CREDITS</h1></button>
     <button style='left: 33.3%; width: 33.3%; top: 45%' onclick="var a = confirm('Are you sure? This will erase your level saves!'); if(a) localStorage['wormholes.levels'] = 1;"><h1>RESET</h1></button>
   `;
   //mainMenu.style.marginLeft = (innerWidth/2-mainMenu.getBoundingClientRect().width)+"px";
