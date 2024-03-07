@@ -4,7 +4,7 @@ menuSystem.level = -1;
 menuSystem.lastSave = -1;
 menuSystem.levelJustBeaten = -1;
 menuSystem.allowSwitchItems = false;
-menuSystem.gameVersion = "DEV";
+menuSystem.gameVersion = "1.0";
 
 menuSystem.init = function() {
   menuSystem.mainMenu = document.createElement("div");
