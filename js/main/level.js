@@ -11,6 +11,12 @@ levelBuilder.wallMaterial2.map.wrapT = 1000;
 levelBuilder.wallMaterial2.map.repeat.setScalar(2);
 levelBuilder.blockMaterial = new THREE.MeshBasicMaterial({map:mainGame.textureLoader.load("textures/7.png")});
 levelBuilder.objectiveBlockerMaterial = new THREE.MeshBasicMaterial({map:mainGame.textureLoader.load("textures/8.png")});
+levelBuilder.wallMaterial3 = new THREE.MeshBasicMaterial({map:mainGame.textureLoader.load("textures/3.png")});
+levelBuilder.wallMaterial3.map.wrapS = 1000;
+levelBuilder.wallMaterial3.map.wrapT = 1000;
+levelBuilder.wallMaterial3.map.repeat.set(8.2,8.2/4);
+levelBuilder.signMaterial1 = new THREE.MeshBasicMaterial({map:mainGame.textureLoader.load("textures/Sign/Sign1.png"),transparent:true});
+levelBuilder.windowMaterial = new THREE.MeshBasicMaterial({map:mainGame.textureLoader.load("textures/9.png"),transparent:true,opacity:0.5});
 
 levelBuilder.init = function () {
   mainGame.scene.background=new THREE.Color("skyblue");
@@ -32,6 +38,7 @@ levelBuilder.clearScene = function() {
       if(child.button) {
         physicsSystem.hitboxes.splice(physicsSystem.hitboxes.indexOf(child.children[0]),1);
         physicsSystem.world.remove(child.children[0].body);
+        physicsSystem.world.remove(child.children[1].body);
       }
     }
   });
@@ -87,6 +94,7 @@ levelBuilder.buildButton = function (position, objective, rotation) {
   top.scale.set(1,0.5,1);
   top.position.y = 0.5;
   top.material.color.set("red");
+  top.material.transparent = true;
   button.add(top);
   mainGame.scene.add(button);
   physicsSystem.makeHitbox(base, true);
@@ -107,12 +115,12 @@ levelBuilder.buildButton = function (position, objective, rotation) {
       }
     });
     if(guh) {
-      button.children[1].body.position.y = button.position.y + 0.5;
-      if(objectiveBlocker.body.position.y-objective.position.y > 0.9) objectiveBlocker.body.position.y -= 0.2;
+      button.children[1]/*.body*/.position.y = /*button.position.y + */0.5;
+      if(objectiveBlocker.body.position.y-objective.position.y > 0.9) objectiveBlocker/*.body*/.position.y -= 0.2;
       objective.blocked = true;
     } else {
-      if(objectiveBlocker.body.position.y-objective.position.y < 4.5) objectiveBlocker.body.position.y += 0.1;
-      button.children[1].body.position.y = button.position.y + 0.1;
+      if(objectiveBlocker.body.position.y-objective.position.y < 4.5) objectiveBlocker/*.body*/.position.y += 0.1;
+      button.children[1]/*.body*/.position.y = /*button.position.y + */0.1;
       objective.blocked = false;
     }
   }
@@ -562,6 +570,68 @@ levelBuilder.level8 = function () {
   mainGame.scene.add(wall_1);
   wall_1.scale.set(30,20,1);
   wall_1.position.z = 15;
+  wall_1.position.y = 5;
+  var wall_2 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_2);
+  wall_2.scale.set(30,20,1);
+  wall_2.position.z = -15;
+  wall_2.position.y = 5;
+  var wall_3 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_3);
+  wall_3.scale.set(1,20,30);
+  wall_3.position.x = 15;
+  wall_3.position.y = 5;
+  var wall_4 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_4);
+  wall_4.scale.set(1,20,30);
+  wall_4.position.x = -15;
+  wall_4.position.y = 5;
+  var ceiling = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(ceiling);
+  ceiling.scale.set(30,1,30);
+  ceiling.position.y = 15;
+  var random_block = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.blockMaterial);
+  mainGame.scene.add(random_block);
+  random_block.scale.set(1,1,1);
+  random_block.position.set(0, 1.5,4);
+  var pillar_1 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
+  mainGame.scene.add(pillar_1);
+  pillar_1.scale.set(2.5,12,2.5);
+  pillar_1.position.set(0,5.25,-9);
+  
+  //hitboxes
+  physicsSystem.makeHitbox(floor,true); 
+  physicsSystem.makeHitbox(wall_1, true); 
+  physicsSystem.makeHitbox(wall_2, true); 
+  physicsSystem.makeHitbox(wall_3, true); 
+  physicsSystem.makeHitbox(wall_4, true);
+  physicsSystem.makeHitbox(random_block);
+  physicsSystem.makeHitbox(ceiling,true);
+  physicsSystem.makeHitbox(pillar_1,true);
+  
+  //goal
+  var objective = levelBuilder.buildObjective(new THREE.Vector3(0,2,14.5));
+  
+  //button
+  levelBuilder.buildButton(new THREE.Vector3(0, 11.5, -9), objective);
+  
+  //player positioning
+  player.character.body.position.set(0, 2, -7);
+  mainGame.camera.rotation.set(0,Math.PI,0);
+  
+  //starting item
+  itemSystem.switchTo("pickUp");
+}
+
+levelBuilder.level9 = function () {
+  //map
+  var floor = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
+  mainGame.scene.add(floor);
+  floor.scale.set(100,0.5,100);
+  var wall_1 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_1);
+  wall_1.scale.set(30,20,1);
+  wall_1.position.z = 15;
   var wall_2 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
   mainGame.scene.add(wall_2);
   wall_2.scale.set(30,20,1);
@@ -623,7 +693,71 @@ levelBuilder.level8 = function () {
   player.settings.hidden = true;
 }
 
-levelBuilder.level9 = function () {
+levelBuilder.level10 = function () {
+  //map
+  var floor = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
+  mainGame.scene.add(floor);
+  floor.scale.set(100,0.5,100);
+  var wall_1 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_1);
+  wall_1.scale.set(30,20,1);
+  wall_1.position.z = 15;
+  wall_1.position.y = 10;
+  var wall_2 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_2);
+  wall_2.scale.set(30,20,1);
+  wall_2.position.z = -15;
+  wall_2.position.y = 10;
+  var wall_3 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_3);
+  wall_3.scale.set(1,20,30);
+  wall_3.position.x = 15;
+  wall_3.position.y = 10;
+  var wall_4 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_4);
+  wall_4.scale.set(1,20,30);
+  wall_4.position.x = -15;
+  wall_4.position.y = 10;
+  var ceiling = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(ceiling);
+  ceiling.scale.set(30,1,30);
+  ceiling.position.y = 20;
+  var wall_5 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
+  mainGame.scene.add(wall_5);
+  wall_5.scale.set(30,12,10);
+  wall_5.position.set(0,6,12);
+  var wall_6 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.windowMaterial);
+  mainGame.scene.add(wall_6);
+  wall_6.scale.set(30,12,1);
+  wall_6.position.set(0,16,7.55);
+  
+  //portals
+  var a = portalSystem.spawnPortal(false,false,true);
+  a.position.set(-14.2, 10, -6);
+  a.rotation.y = -Math.PI/2;
+  var b = portalSystem.spawnPortal(a,false,true);
+  b.position.set(12, 14, 14);
+  
+  //hitboxes
+  physicsSystem.makeHitbox(floor,true); 
+  physicsSystem.makeHitbox(wall_1, true); 
+  physicsSystem.makeHitbox(wall_2, true); 
+  physicsSystem.makeHitbox(wall_3, true); 
+  physicsSystem.makeHitbox(wall_4, true);
+  physicsSystem.makeHitbox(wall_5, true);
+  portalPhysics.processPortal(a);
+  portalPhysics.processPortal(b);
+  physicsSystem.makeHitbox(wall_6, true);
+  
+  //goal
+  levelBuilder.buildObjective(new THREE.Vector3(0,2,-14.5)).rotation.y=Math.PI;
+  
+  //player positioning
+  player.character.body.position.set(7, 13, 10);
+  mainGame.camera.rotation.set(-Math.PI/8,0,0);
+}
+
+levelBuilder.level11 = function () {
   //map
   var floor = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
   mainGame.scene.add(floor);
@@ -659,7 +793,7 @@ levelBuilder.level9 = function () {
   var pillar_1 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
   mainGame.scene.add(pillar_1);
   pillar_1.scale.set(2.5,10,2.5);
-  pillar_1.position.set(0,-2.5,-2.5);
+  pillar_1.position.set(0,-3.5,-2.5);
   var pillar_2 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
   mainGame.scene.add(pillar_2);
   pillar_2.scale.set(2.5,10,2.5);
@@ -679,11 +813,11 @@ levelBuilder.level9 = function () {
   var pillar_6 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
   mainGame.scene.add(pillar_6);
   pillar_6.scale.set(2.5,10,2.5);
-  pillar_6.position.set(8.5,4,-6);
+  pillar_6.position.set(8.5,3.75,-6);
   var pillar_7 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
   mainGame.scene.add(pillar_7);
   pillar_7.scale.set(2.5,10,2.5);
-  pillar_7.position.set(-6,4,-6);
+  pillar_7.position.set(-5.5,4,-6);
   
   //portals
   var a = portalSystem.spawnPortal(false,false,true);
@@ -717,7 +851,7 @@ levelBuilder.level9 = function () {
   mainGame.camera.rotation.set(0,Math.PI,0);
 }
 
-levelBuilder.level10 = function () {
+levelBuilder.level12 = function () {
   //map
   var floor = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
   mainGame.scene.add(floor);
@@ -775,7 +909,7 @@ levelBuilder.level10 = function () {
   itemSystem.switchTo("wormholeGun");
 }
 
-levelBuilder.level11 = function () {
+levelBuilder.level13 = function () {
   //map
   var floor = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
   mainGame.scene.add(floor);
@@ -823,7 +957,7 @@ levelBuilder.level11 = function () {
   itemSystem.switchTo("wormholeGun");
 }
 
-levelBuilder.level12 = function () {
+levelBuilder.level14 = function () {
   //map
   var floor = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
   mainGame.scene.add(floor);
@@ -860,6 +994,7 @@ levelBuilder.level12 = function () {
   physicsSystem.makeHitbox(wall_2, true); 
   physicsSystem.makeHitbox(wall_3, true); 
   physicsSystem.makeHitbox(wall_4, true); 
+  physicsSystem.makeHitbox(ceiling, true); 
   
   //goal
   levelBuilder.buildObjective(new THREE.Vector3(0,2,14.5));
@@ -871,7 +1006,7 @@ levelBuilder.level12 = function () {
   itemSystem.switchTo("wormholeGun");
 }
 
-levelBuilder.level13 = function () {
+levelBuilder.level15 = function () {
   //map
   var floor = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
   mainGame.scene.add(floor);
@@ -920,7 +1055,172 @@ levelBuilder.level13 = function () {
   itemSystem.switchTo("wormholeGun");
 }
 
-levelBuilder.level14 = function () {
+levelBuilder.level16 = function () {
+  //map
+  var floor = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
+  mainGame.scene.add(floor);
+  floor.scale.set(100,0.5,100);
+  var wall_1 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial2);
+  mainGame.scene.add(wall_1);
+  wall_1.scale.set(30*8,20*8,1);
+  wall_1.position.z = 15*8;
+  var wall_2 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial2);
+  mainGame.scene.add(wall_2);
+  wall_2.scale.set(30*8,20*8,1);
+  wall_2.position.z = -15/2;
+  var wall_3 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial2);
+  mainGame.scene.add(wall_3);
+  wall_3.scale.set(1,20*8,30*8);
+  wall_3.position.x = 15/2;
+  var wall_4 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial2);
+  mainGame.scene.add(wall_4);
+  wall_4.scale.set(1,20*8,30*8);
+  wall_4.position.x = -15/2;
+  var ceiling = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial2);
+  mainGame.scene.add(ceiling);
+  ceiling.scale.set(30*8,1,30*8);
+  ceiling.position.y = 10*8;
+  var floor_2 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
+  mainGame.scene.add(floor_2);
+  floor_2.scale.set(100,0.5,100);
+  floor_2.position.z = 100;
+  var a = 50;
+  var b = 15;
+  var wall_5 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial2);
+  mainGame.scene.add(wall_5);
+  wall_5.scale.set(30*8,20*8,1);
+  wall_5.position.z = b;
+  wall_5.position.y = a-100;
+  var wall_6 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial2);
+  mainGame.scene.add(wall_6);
+  wall_6.scale.set(30*8,20*8,1);
+  wall_6.position.z = b;
+  wall_6.position.y = a+65;
+  var a = 30;
+  var b = 30;
+  var wall_7 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial2);
+  mainGame.scene.add(wall_7);
+  wall_7.scale.set(30*8,20*8,1);
+  wall_7.position.z = b;
+  wall_7.position.y = a-100;
+  var wall_8 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial2);
+  mainGame.scene.add(wall_8);
+  wall_8.scale.set(30*8,20*8,1);
+  wall_8.position.z = b;
+  wall_8.position.y = a+65;
+  var sign1 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.signMaterial1);
+  mainGame.scene.add(sign1);
+  sign1.scale.set(1.8,1.5,0.05);
+  sign1.position.set(7.02,1.5,-3);
+  sign1.rotation.y = Math.PI/2;
+  sign1.rotation.z = Math.PI;
+  var sign1 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.signMaterial1);
+  mainGame.scene.add(sign1);
+  sign1.scale.set(1.8,1.5,0.05);
+  sign1.position.set(-7.02,1.5,-3);
+  sign1.rotation.y = Math.PI/2;
+  var sign1 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.signMaterial1);
+  mainGame.scene.add(sign1);
+  sign1.scale.set(1.8,1.5,0.05);
+  sign1.position.set(7.02,1.5,-3+30);
+  sign1.rotation.y = Math.PI/2;
+  sign1.rotation.z = Math.PI;
+  var sign1 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.signMaterial1);
+  mainGame.scene.add(sign1);
+  sign1.scale.set(1.8,1.5,0.05);
+  sign1.position.set(-7.02,1.5,-3+30);
+  sign1.rotation.y = Math.PI/2;
+  var sign1 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.signMaterial1);
+  mainGame.scene.add(sign1);
+  sign1.scale.set(1.8,1.5,0.05);
+  sign1.position.set(7.02,1.5,-3+60);
+  sign1.rotation.y = Math.PI/2;
+  sign1.rotation.z = Math.PI;
+  var sign1 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.signMaterial1);
+  mainGame.scene.add(sign1);
+  sign1.scale.set(1.8,1.5,0.05);
+  sign1.position.set(-7.02,1.5,-3+60);
+  sign1.rotation.y = Math.PI/2;
+  var sign1 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.signMaterial1);
+  mainGame.scene.add(sign1);
+  sign1.scale.set(1.8,1.5,0.05);
+  sign1.position.set(7.02,1.5,-3+90);
+  sign1.rotation.y = Math.PI/2;
+  sign1.rotation.z = Math.PI;
+  var sign1 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.signMaterial1);
+  mainGame.scene.add(sign1);
+  sign1.scale.set(1.8,1.5,0.05);
+  sign1.position.set(-7.02,1.5,-3+90);
+  sign1.rotation.y = Math.PI/2;
+  var a = 40;
+  var b = 90;
+  var wall_9 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial2);
+  mainGame.scene.add(wall_9);
+  wall_9.scale.set(30*8,20*8,1);
+  wall_9.position.z = b;
+  wall_9.position.y = a-100;
+  var wall_10 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial2);
+  mainGame.scene.add(wall_10);
+  wall_10.scale.set(30*8,20*8,1);
+  wall_10.position.z = b;
+  wall_10.position.y = a+65;
+  var a = 60;
+  var b = 60;
+  var wall_11 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial2);
+  mainGame.scene.add(wall_11);
+  wall_11.scale.set(30*8,20*8,1);
+  wall_11.position.z = b;
+  wall_11.position.y = a-100;
+  var wall_12 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial2);
+  mainGame.scene.add(wall_12);
+  wall_12.scale.set(30*8,20*8,1);
+  wall_12.position.z = b;
+  wall_12.position.y = a+65;
+  var floor_3 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
+  mainGame.scene.add(floor_3);
+  floor_3.scale.set(15,0.5,10);
+  floor_3.position.set(0,45,95);
+  var floor_4 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
+  mainGame.scene.add(floor_4);
+  floor_4.scale.set(15,0.5,10);
+  floor_4.position.set(0,55,105);
+  var floor_5 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
+  mainGame.scene.add(floor_5);
+  floor_5.scale.set(15,0.5,10);
+  floor_5.position.set(0,65,120);
+  
+  //hitboxes
+  physicsSystem.makeHitbox(floor,true); 
+  physicsSystem.makeHitbox(wall_1, true); 
+  physicsSystem.makeHitbox(wall_2, true); 
+  physicsSystem.makeHitbox(wall_3, true); 
+  physicsSystem.makeHitbox(wall_4, true); 
+  physicsSystem.makeHitbox(ceiling, true); 
+  physicsSystem.makeHitbox(wall_5, true); 
+  physicsSystem.makeHitbox(floor_2, true); 
+  physicsSystem.makeHitbox(wall_6, true); 
+  physicsSystem.makeHitbox(wall_7, true); 
+  physicsSystem.makeHitbox(wall_8, true); 
+  physicsSystem.makeHitbox(wall_9, true); 
+  physicsSystem.makeHitbox(wall_10, true);
+  physicsSystem.makeHitbox(wall_11, true); 
+  physicsSystem.makeHitbox(wall_12, true);
+  physicsSystem.makeHitbox(floor_3, true); 
+  physicsSystem.makeHitbox(floor_4, true); 
+  physicsSystem.makeHitbox(floor_5, true); 
+  
+  //goal
+  levelBuilder.buildObjective(new THREE.Vector3(0,4*16+4,14.5*8+3.5));
+  
+  //player positioning
+  player.character.body.position.set(0, 2, -5);
+  mainGame.camera.rotation.set(0,-Math.PI,0);
+  
+  //starting item
+  itemSystem.switchTo("wormholeGun");
+}
+
+levelBuilder.level17 = function () {
   //map
   var floor = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
   mainGame.scene.add(floor);
@@ -979,7 +1279,65 @@ levelBuilder.level14 = function () {
   menuSystem.allowSwitchItems = ["pickUp", "wormholeGun"];
 }
 
-levelBuilder.level15 = function () {
+levelBuilder.level18 = function () {
+  //map
+  var floor = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
+  mainGame.scene.add(floor);
+  floor.scale.set(100,0.5,100);
+  var wall_1 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_1);
+  wall_1.scale.set(30,20,1);
+  wall_1.position.z = 15;
+  var wall_2 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_2);
+  wall_2.scale.set(30,20,1);
+  wall_2.position.z = -15;
+  var wall_3 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_3);
+  wall_3.scale.set(1,20,30);
+  wall_3.position.x = 15;
+  var wall_4 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_4);
+  wall_4.scale.set(1,20,30);
+  wall_4.position.x = -15;
+  var ceiling = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(ceiling);
+  ceiling.scale.set(30,1,30);
+  ceiling.position.y = 10;
+  var random_block = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.blockMaterial);
+  mainGame.scene.add(random_block);
+  random_block.scale.set(1,1,1);
+  random_block.position.set(0,7,10);
+  var floor2 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial2);
+  mainGame.scene.add(floor2);
+  floor2.scale.set(10,0.5,10);
+  floor2.position.set(0, 6, 10);
+  
+  //hitboxes
+  physicsSystem.makeHitbox(floor,true); 
+  physicsSystem.makeHitbox(wall_1, true); 
+  physicsSystem.makeHitbox(wall_2, true); 
+  physicsSystem.makeHitbox(wall_3, true); 
+  physicsSystem.makeHitbox(wall_4, true);
+  physicsSystem.makeHitbox(random_block);
+  physicsSystem.makeHitbox(floor2,true); 
+  
+  //goal
+  var objective = levelBuilder.buildObjective(new THREE.Vector3(0,2,14.5));
+  
+  //button
+  levelBuilder.buildButton(new THREE.Vector3(0, 0.75, -2), objective);
+  
+  //player positioning
+  player.character.body.position.set(0, 2, -7);
+  mainGame.camera.rotation.set(0,Math.PI,0);
+  
+  //starting item
+  itemSystem.switchTo("pickUp");
+  menuSystem.allowSwitchItems = ["pickUp", "wormholeGun"];
+}
+
+levelBuilder.level19 = function () {
   //map
   var floor = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
   mainGame.scene.add(floor);
@@ -1066,7 +1424,7 @@ levelBuilder.level15 = function () {
   menuSystem.allowSwitchItems = ["pickUp", "wormholeGun"];
 }
 
-levelBuilder.level16 = function () {
+levelBuilder.level20 = function () {
   //map
   var floor = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
   mainGame.scene.add(floor);
@@ -1137,6 +1495,125 @@ levelBuilder.level16 = function () {
   
   //player positioning
   player.character.body.position.set(0, 6, -8);
+  mainGame.camera.rotation.set(0,Math.PI,0);
+  
+  //starting item
+  itemSystem.switchTo("pickUp");
+  menuSystem.allowSwitchItems = ["pickUp", "wormholeGun"];
+}
+
+levelBuilder.level21 = function () {
+  //map
+  var floor = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
+  mainGame.scene.add(floor);
+  floor.scale.set(100,0.5,100);
+  var wall_1 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_1);
+  wall_1.scale.set(30,20,1);
+  wall_1.position.z = 15;
+  wall_1.position.y = 10;
+  var wall_2 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_2);
+  wall_2.scale.set(30,20,1);
+  wall_2.position.z = -15;
+  wall_2.position.y = 10;
+  var wall_3 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_3);
+  wall_3.scale.set(1,20,30);
+  wall_3.position.x = 15;
+  wall_3.position.y = 10;
+  var wall_4 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_4);
+  wall_4.scale.set(1,20,30);
+  wall_4.position.x = -15;
+  wall_4.position.y = 10;
+  var ceiling = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(ceiling);
+  ceiling.scale.set(30,1,30);
+  ceiling.position.y = 24;
+  var ceiling_2 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(ceiling_2);
+  ceiling_2.scale.set(30,0.5,30);
+  ceiling_2.position.set(0,20,2);
+  var ceiling_3 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(ceiling_3);
+  ceiling_3.scale.set(30,0.5,30);
+  ceiling_3.position.set(-3.7,20.001,-26);
+  var block = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.blockMaterial);
+  mainGame.scene.add(block);
+  block.scale.set(1,1,1);
+  block.position.set(0, 6.75, -2);
+  var floor_2 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
+  mainGame.scene.add(floor_2);
+  floor_2.scale.set(100,0.5,100);
+  floor_2.position.set(0,10,-37);
+  var floor_3 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
+  mainGame.scene.add(floor_3);
+  floor_3.scale.set(100,0.5,100);
+  floor_3.position.set(37,10,63);
+  var floor_4 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
+  mainGame.scene.add(floor_4);
+  floor_4.scale.set(100,0.5,100);
+  floor_4.position.set(0,6,-37);
+  var floor_5 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.floorMaterial);
+  mainGame.scene.add(floor_5);
+  floor_5.scale.set(100,0.5,100);
+  floor_5.position.set(-37,6,63);
+  var wall_5 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial3);
+  mainGame.scene.add(wall_5);
+  wall_5.scale.set(30,4,1);
+  wall_5.position.z = -14;
+  wall_5.position.y = 8;
+  var wall_6 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_6);
+  wall_6.scale.set(30,20,1);
+  wall_6.position.z = 15;
+  wall_6.position.y = 30;
+  var wall_7 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_7);
+  wall_7.scale.set(30,20,1);
+  wall_7.position.z = -15;
+  wall_7.position.y = 30;
+  var wall_8 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_8);
+  wall_8.scale.set(1,20,30);
+  wall_8.position.x = 15;
+  wall_8.position.y = 30;
+  var wall_9 = new THREE.Mesh(new THREE.BoxGeometry(),levelBuilder.wallMaterial);
+  mainGame.scene.add(wall_9);
+  wall_9.scale.set(1,20,30);
+  wall_9.position.x = -15;
+  wall_9.position.y = 30;
+  
+  //hitboxes
+  physicsSystem.makeHitbox(floor,true); 
+  physicsSystem.makeHitbox(wall_1, true); 
+  physicsSystem.makeHitbox(wall_2, true); 
+  physicsSystem.makeHitbox(wall_3, true); 
+  physicsSystem.makeHitbox(wall_4, true);
+  physicsSystem.makeHitbox(ceiling_2, true);
+  physicsSystem.makeHitbox(ceiling_3, true);
+  physicsSystem.makeHitbox(ceiling, true);
+  physicsSystem.makeHitbox(block);
+  physicsSystem.makeHitbox(floor_2,true);
+  physicsSystem.makeHitbox(floor_3,true);
+  physicsSystem.makeHitbox(floor_4,true);
+  physicsSystem.makeHitbox(floor_5,true);
+  physicsSystem.makeHitbox(wall_5, true);
+  physicsSystem.makeHitbox(wall_6, true);
+  physicsSystem.makeHitbox(wall_7, true);
+  physicsSystem.makeHitbox(wall_8, true);
+  physicsSystem.makeHitbox(wall_9, true);
+  floor_3.scale.x=-100;
+  
+  //goal
+  var objective = levelBuilder.buildObjective(new THREE.Vector3(0,2,-14.5));
+  
+  //button
+  levelBuilder.buildButton(new THREE.Vector3(0,20.5,0), objective);
+  
+  //player positioning
+  player.character.body.position.set(0, 12, -8);
   mainGame.camera.rotation.set(0,Math.PI,0);
   
   //starting item

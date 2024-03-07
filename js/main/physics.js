@@ -41,6 +41,26 @@ physicsSystem.makeHitbox = function(obj, solid) {
   return obj.body;
 }
 
+physicsSystem.areColliding = function(a,b) {
+  var guh = true;
+  physicsSystem.world.contacts.forEach(function (contact) {
+    if((contact.bi == a.body && contact.bj == b.body) || (contact.bi == b.body && contact.bj == a.body)) {
+      guh = false;
+    }
+  });
+  return !guh;
+}
+
+physicsSystem.isColliding = function(a) {
+  var guh = true;
+  physicsSystem.world.contacts.forEach(function (contact) {
+    if((contact.bi == a.body /*&& contact.bj == b.body*/) || (/*contact.bi == b.body && */contact.bj == a.body)) {
+      guh = false;
+    }
+  });
+  return !guh;
+}
+
 physicsSystem.update = function () {
   var delta = (Date.now()-physicsSystem.lastTick)/1000;
   if(delta > 0.7) {
@@ -53,7 +73,22 @@ physicsSystem.update = function () {
     physicsSystem.lastTick = Date.now();
   }
   physicsSystem.hitboxes.forEach(function(obj) {
-    obj.position.copy(obj.parent.worldToLocal(new THREE.Vector3().copy(obj.body.position)));
-    obj.quaternion.copy(obj.body.quaternion);
+    if(!obj.parent) {
+      console.error("physicsSystem.update: Physics object has no parent!");
+      return;
+    }
+    if(!obj.body.mass == 0) {
+      //non frozen objects
+      obj.position.copy(obj.parent.worldToLocal(new THREE.Vector3().copy(obj.body.position)));
+      obj.quaternion.copy(obj.body.quaternion);
+    } else {
+      //frozen objects
+      var position = new THREE.Vector3();
+      obj.getWorldPosition(position);
+      obj.body.position.copy(position);
+      var quaternion = new THREE.Quaternion();
+      obj.getWorldQuaternion(quaternion);
+      obj.body.quaternion.copy(quaternion);
+    }
   });
 }

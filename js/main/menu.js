@@ -1,10 +1,10 @@
 const menuSystem = {};
-menuSystem.levels = 16;
+menuSystem.levels = 21;
 menuSystem.level = -1;
 menuSystem.lastSave = -1;
 menuSystem.levelJustBeaten = -1;
 menuSystem.allowSwitchItems = false;
-menuSystem.gameVersion = "1.0_beta";
+menuSystem.gameVersion = "DEV";
 
 menuSystem.init = function() {
   menuSystem.mainMenu = document.createElement("div");
@@ -18,7 +18,7 @@ menuSystem.init = function() {
     <br>
     <h1 style="margin-left: 0%">WORMHOLES</h1>
     <h3>`+menuSystem.gameVersion+`</h3>
-    <button style='left: 33.3%; width: 33.3%; top: 25%' onclick="menuSystem.levelSelectScreen()"><h1>PLAY</h1></button>
+    <button style='left: 33.3%; width: 33.3%; top: 25%' onclick="menuSystem.levelSelect.style.display='block';menuSystem.mainMenu.style.display='none';"><h1>PLAY</h1></button>
     <button style='left: 33.3%; width: 33.3%; top: 35%' onclick="var popup = window.open('about:blank',false,'width=1'); popup.document.write('<h1>WORMHOLES</h1>A game by ExplodIng_Andrey<br><br><b>Special thanks to:</b><br>Metalarse1234 - suggestions<br>Larry - testing<br>TonyTheBoi - testing<br>Pixi - testing<br>Lightbulb - testing<br>JavTheNoob - testing and suggestions<br>Sheriff Of Light - testing<br><br><i>If you believe something is wrong here, (e.g. something is missing), let me know!</i>'); if(popup.closed) alert('Thanks to everyone who tested!')"><h1>CREDITS</h1></button>
     <button style='left: 33.3%; width: 33.3%; top: 45%' onclick="var a = confirm('Are you sure? This will erase your level saves!'); if(a) localStorage['wormholes.levels'] = 1;"><h1>RESET</h1></button>
   `;
@@ -29,6 +29,7 @@ menuSystem.init = function() {
   menuSystem.itemInstructions = document.createElement("div");
   menuSystem.itemInstructions.style = "position:fixed;top:0;right:0";
   document.body.appendChild(menuSystem.itemInstructions);
+  menuSystem.levelSelectScreen();
   //if save doesn't exist, create it
   localStorage["wormholes.levels"] = localStorage["wormholes.levels"] || "1";
   //events
@@ -37,18 +38,24 @@ menuSystem.init = function() {
       itemSystem.switchTo(menuSystem.allowSwitchItems[Number(event.key)-1]);
     }
   });
+  //crosshair
+  var crosshair = document.createElement("div");
+  document.body.appendChild(crosshair);
+  crosshair.style = "position: fixed; top: 49%; height: 2%; left:49%;width:2%;text-align:center;pointer-events:none";
+  crosshair.innerHTML = "+";
 }
 
 menuSystem.levelSelectScreen = function() {
   menuSystem.levelSelect = menuSystem.mainMenu.cloneNode();
   document.body.appendChild(menuSystem.levelSelect);
-  menuSystem.mainMenu.style.display = "none";
+  menuSystem.levelSelect.style.display = "none";
   menuSystem.levelSelect.innerHTML = `
     <br>
     <br>
     <br>
     <br>
-    <h1 style="margin-left: 0%">WORMHOLES - LEVEL SELECT</h1>
+    <h1 style="margin-left: 0%">WORMHOLES - LEVEL SELECT
+    <button style="margin-left:-500" onclick="menuSystem.levelSelect.style.display='none';menuSystem.mainMenu.style.display='block';">&#10094;</button></h1>
     <div id="levels"></div>
   `
 }
@@ -86,7 +93,7 @@ menuSystem.update = function() {
   menuSystem.itemInstructions.innerHTML = "";
   if(menuSystem.allowSwitchItems) {
     menuSystem.allowSwitchItems.forEach(function(item,index){
-      menuSystem.itemInstructions.innerHTML += "<h1 style='color:"+(item == itemSystem.currentItem ? "#e0e0e0" : "black")+"'>"+(index+1)+": "+item+"</h1>";
+      menuSystem.itemInstructions.innerHTML += "<h1 style='color:"+(item == itemSystem.currentItem ? "#e0e0e0" : "black")+"'>"+(index+1)+": "+item.replace(/([a-z])([A-Z])/g, '$1 $2');+"</h1>";
     });
   }
 }

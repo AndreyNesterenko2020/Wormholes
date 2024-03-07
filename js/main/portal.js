@@ -102,6 +102,9 @@ portalSystem.updatePortals = function () {
           //if(!portalSystem.settings.gpuSafe) portal.rendertarget_=new THREE.WebGLRenderTarget(portalSystem.portalSize.x*portalSystem.settings.resolution,portalSystem.portalSize.y*portalSystem.settings.resolution);
           //
           //TODO: when you look through a portal at another portal which is supposed to be visible through the portal that you are looking at, it may not work properly, causing the portal output's angle to be wrong
+          //Nope, not doing that, let this be the final release with no other updates. Ever
+          //its good enough
+          //sorta todo: clean this entire file up, lots of useless stuff, however I know damn well I am NEVER coming back here. This shall remain messy until the end of time.
           if(!portal.rendertarget_[portal.currentrendertarget]) portal.currentrendertarget = 0;
           
           portalSystem.portalCamera.position.copy(portal.counterpart.position);
@@ -109,9 +112,42 @@ portalSystem.updatePortals = function () {
           portalSystem.portalCamera.applyQuaternion(mainGame.camera.quaternion);
           portalSystem.portalCamera.rotation.reorder("YXZ");
           mainGame.camera.rotation.reorder("YXZ");
-          portalSystem.portalCamera.rotation.x = ((portal.counterpart.rotation.x-portal.rotation.x)-(-mainGame.camera.rotation.x));
+          
+          //fallback point if the new implementation is too scuffed
+          /*portalSystem.portalCamera.rotation.x = ((portal.counterpart.rotation.x-portal.rotation.x)-(-mainGame.camera.rotation.x));
           portalSystem.portalCamera.rotation.z = ((portal.counterpart.rotation.z-portal.rotation.z)-(-mainGame.camera.rotation.z));
           portalSystem.portalCamera.rotation.y = ((portal.counterpart.rotation.y-portal.rotation.y)-(Math.PI-mainGame.camera.rotation.y));
+          */
+          
+          //the angle of the portal preview
+          //15, referring to ~1.5707 radians rounded, approx. 90 degrees.
+          //Basically comparing if each of the portals in the pair are straight up, if not, use slightly different algorithm when calculating the preview angle
+          //&#129299;
+          if(Math.floor(Math.abs(portal.rotation.x*10)) == 15 && Math.floor(Math.abs(portal.counterpart.rotation.x*10)) == 15) {
+            //both portals straight up
+            portalSystem.portalCamera.rotation.x = ((-mainGame.camera.rotation.x)-(portal.counterpart.rotation.x-portal.rotation.x));
+          } else {
+            //one or no portal is standing up
+            portalSystem.portalCamera.rotation.x = ((portal.counterpart.rotation.x-portal.rotation.x)-(-mainGame.camera.rotation.x));
+          }
+          if(Math.floor(Math.abs(portal.rotation.x*10)) == 15 && Math.floor(Math.abs(portal.counterpart.rotation.x*10)) == 15) {
+            //both portals straight up
+            portalSystem.portalCamera.rotation.z = ((-mainGame.camera.rotation.z)-(portal.counterpart.rotation.z-portal.rotation.z));
+          } else {
+            //one or no portal is standing up
+            portalSystem.portalCamera.rotation.z = ((portal.counterpart.rotation.z-portal.rotation.z)-(-mainGame.camera.rotation.z));
+          }
+          if(Math.floor(Math.abs(portal.rotation.x*10)) == 15 && Math.floor(Math.abs(portal.counterpart.rotation.x*10)) == 15) {
+            //both portals straight up
+            portalSystem.portalCamera.rotation.y = ((Math.PI-mainGame.camera.rotation.y)-(portal.counterpart.rotation.y-portal.rotation.y));
+          } else {
+            //one or no portal is standing up
+            portalSystem.portalCamera.rotation.y = ((portal.counterpart.rotation.y-portal.rotation.y)-(Math.PI-mainGame.camera.rotation.y));
+          }
+        
+          //value passed to portal physics calculation
+          portal.camRot = portalSystem.portalCamera.rotation;
+          
           portal.rendertarget_[portal.currentrendertarget].texture.colorSpace=mainGame.renderer.colorSpace;
           mainGame.renderer.setRenderTarget(portal.rendertarget_[portal.currentrendertarget]);
           mainGame.renderer.render(mainGame.scene,portalSystem.portalCamera);

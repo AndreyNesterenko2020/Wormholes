@@ -15,7 +15,9 @@ cheats.init = function() {
 
 cheats.update = function() {
   if(cheats.buffer.includes("monkey")) {
-    cheats.enabled = true;
+    setTimeout(function(){
+      cheats.enabled = true;
+    },100);
     cheats.buffer = "";
   }
   if(cheats.buffer.includes("wormholes")) {
